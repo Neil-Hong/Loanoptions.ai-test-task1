@@ -1,52 +1,48 @@
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchData, handleAdd, handleDelete } from "../redux/fetchDataSlice";
 
 import "./fetchedTable.scss";
 
 const FetchedTable = () => {
-    const [result, setResult] = useState(null);
-    const fetchData = async () => {
-        try {
-            const response = await fetch("http://universities.hipolabs.com/search?country=Australia");
-            const data = await response.json();
-            setResult(data);
-        } catch (error) {
-            alert(error.message);
-            throw new Error(`${error}`);
-        }
+    const result = useSelector((state) => state.list.list);
+    const dispatch = useDispatch();
+
+    let mybutton = document.getElementById("topBtn");
+    window.onscroll = function () {
+        scrollFunction();
     };
 
-    const handleLoad = () => {
-        fetchData();
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.style.display = "block";
+        } else {
+            mybutton.style.display = "none";
+        }
+    }
+    const backTop = () => {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
     };
 
-    const handleDelete = () => {
-        if (result) {
-            result.splice(-1);
-            setResult([...result]);
-        }
-    };
-
-    const handleAdd = () => {
-        if (result) {
-            result.push(result[0]);
-            setResult([...result]);
-        }
-    };
     return (
         <div className="fechedTable-container">
             <h1>Loanoptions.ai Assessment - Task 1</h1>
             <div className="button-container">
-                <button className="btn btn-dark" onClick={handleLoad}>
+                <button className="btn btn-dark" onClick={() => dispatch(fetchData())}>
                     Load
                 </button>
-                <button className="btn btn-dark" onClick={handleDelete}>
+                <button className="btn btn-dark" onClick={() => dispatch(handleDelete())}>
                     Delete
                 </button>
-                <button className="btn btn-dark" onClick={handleAdd}>
+                <button className="btn btn-dark" onClick={() => dispatch(handleAdd())}>
                     Add
                 </button>
             </div>
+            <button onClick={backTop} id="topBtn">
+                Back to Top
+            </button>
 
             <table className="table table-striped table-bordered table-hover">
                 <thead>

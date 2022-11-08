@@ -4,7 +4,7 @@ import Table from "react-bootstrap/Table";
 import "./fetchedTable.scss";
 
 const FetchedTable = () => {
-    const [result, setResult] = useState([]);
+    const [result, setResult] = useState(null);
     const fetchData = async () => {
         try {
             const response = await fetch("http://universities.hipolabs.com/search?country=Australia");
@@ -16,48 +16,86 @@ const FetchedTable = () => {
         }
     };
 
-    useEffect(() => {
+    const handleLoad = () => {
         fetchData();
-    }, []);
-    console.log(result);
+    };
+
+    const handleDelete = () => {
+        if (result) {
+            result.splice(-1);
+            setResult([...result]);
+        }
+    };
+
+    const handleAdd = () => {
+        if (result) {
+            result.push(result[0]);
+            setResult([...result]);
+        }
+    };
     return (
         <div className="fechedTable-container">
             <h1>Loanoptions.ai Assessment - Task 1</h1>
             <div className="button-container">
-                <button className="btn btn-dark">Load</button>
-                <button className="btn btn-dark">Delete</button>
-                <button className="btn btn-dark">Add</button>
+                <button className="btn btn-dark" onClick={handleLoad}>
+                    Load
+                </button>
+                <button className="btn btn-dark" onClick={handleDelete}>
+                    Delete
+                </button>
+                <button className="btn btn-dark" onClick={handleAdd}>
+                    Add
+                </button>
             </div>
 
-            <Table striped bordered hover>
+            <table className="table table-striped table-bordered table-hover">
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
-                    </tr>
+                    {result ? (
+                        <tr>
+                            <th>Country Code</th>
+                            <th>Country</th>
+                            <th>Domains</th>
+                            <th>Name</th>
+                            <th>State/Province</th>
+                            <th>Website</th>
+                        </tr>
+                    ) : (
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    )}
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td colSpan={2}>Larry the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
+                    {result ? (
+                        result.map((item) => {
+                            return (
+                                <tr>
+                                    <td>{item.alpha_two_code}</td>
+                                    <td>{item.country}</td>
+                                    <td>{item.domains}</td>
+                                    <td>{item.name}</td>
+                                    <td>{item["state-province"] === null ? "null" : item["state-province"]}</td>
+                                    <td>{item.web_pages}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    )}
                 </tbody>
-            </Table>
+            </table>
         </div>
     );
 };
